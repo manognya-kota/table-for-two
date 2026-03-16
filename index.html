@@ -292,7 +292,6 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMTxO4aExdD-u8qHFQqkBCV5QG_4ep3iyLA1F7cq2V3zZpCd0go9eG6BQBatXY_n6pvQ/exec";
 // ─────────────────────────────────────────────────────────────
 
-const CLAUDE_API = "https://api.anthropic.com/v1/messages";
 const MEAL_ORDER = ["breakfast","lunch","dinner","snacks"];
 const MEAL_LABELS = {breakfast:"☀ breakfast",lunch:"🌿 lunch",dinner:"🌙 dinner",snacks:"✦ snacks"};
 const MEAL_CLASS = {breakfast:"b",lunch:"l",dinner:"d",snacks:"s"};
@@ -372,7 +371,7 @@ function selectMeal(m){
   });
 }
 
-// ── AI Search ────────────────────────────────────────────────
+// ── AI Search (via Apps Script proxy) ────────────────────────
 async function searchFood(){
   const q=document.getElementById("food-in").value.trim();
   if(!q)return;
@@ -382,19 +381,9 @@ async function searchFood(){
   document.getElementById("error-tip").classList.remove("show");
   document.getElementById("ai-result").classList.remove("show");
   try{
-    const res=await fetch(CLAUDE_API,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:300,
-        system:`You are a precise nutrition expert. Given a food description, return ONLY a valid JSON object with keys: name (concise string), cal (number, calories), p (number, protein g), c (number, carbs g), f (number, fat g). Base on 1 serving of what is described. No markdown, no text, only the JSON object.`,
-        messages:[{role:"user",content:q}]
-      })
-    });
-    const data=await res.json();
-    const raw=data.content.map(b=>b.text||"").join("").replace(/```json|```/g,"").trim();
-    const j=JSON.parse(raw);
+    const data=await api({action:"lookupFood",query:q});
+    if(data.error||!data.food) throw new Error(data.error||"No food returned");
+    const j=data.food;
     aiData={name:j.name,cal:+j.cal,p:+j.p,c:+j.c,f:+j.f};
     document.getElementById("ai-name").textContent=aiData.name;
     document.getElementById("qty-in").value=1;
