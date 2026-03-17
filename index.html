@@ -466,15 +466,10 @@ const data=await api({action:"lookupFood",query:fullQuery});
 
 function updateQty(){
   if(!aiData)return;
-  const q=parseFloat(document.getElementById("qty-in").value)||1;
-  const unit=document.getElementById("unit-select").value;
-  // For weight/volume units, adjust multiplier relative to 100g base if unit is g
-  let multiplier=q;
-  // If unit is g or ml and base is per serving, scale proportionally
-  document.getElementById("ai-cal-pill").textContent=Math.round(aiData.cal*multiplier)+" kcal";
-  document.getElementById("ai-p-pill").textContent=Math.round(aiData.p*multiplier)+"g protein";
-  document.getElementById("ai-c-pill").textContent=Math.round(aiData.c*multiplier)+"g carbs";
-  document.getElementById("ai-f-pill").textContent=Math.round(aiData.f*multiplier)+"g fat";
+  document.getElementById("ai-cal-pill").textContent=Math.round(aiData.cal)+" kcal";
+  document.getElementById("ai-p-pill").textContent=Math.round(aiData.p)+"g protein";
+  document.getElementById("ai-c-pill").textContent=Math.round(aiData.c)+"g carbs";
+  document.getElementById("ai-f-pill").textContent=Math.round(aiData.f)+"g fat";
 }
 
 function getScaledMacros(){
