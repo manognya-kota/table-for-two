@@ -501,13 +501,14 @@ async function init(){
   }
   updateDateDisplay();
   buildMealSections();
-  // Render immediately from cache
-  renderSummary();
-  renderMealLogs();
-  renderHistory(historyCache);
+  // Show app IMMEDIATELY — no waiting
   document.getElementById("loading").classList.add("hide");
   document.getElementById("main-app").style.display="block";
   setTimeout(()=>document.getElementById("loading").remove(),400);
+  // Render from cache right away
+  renderSummary();
+  renderMealLogs();
+  renderHistory(historyCache);
   // Refresh goals + data from server in background
   const [gm,gt]=await Promise.all([
     api({action:"getGoals",user:"manu"}),
