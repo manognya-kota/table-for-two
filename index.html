@@ -484,21 +484,35 @@ async function init(){
   // Load goals from localStorage instantly
   const cached=localStorage.getItem("t4t-goals");
   if(cached) Object.assign(goals,JSON.parse(cached));
+  // Load log cache from localStorage instantly
+  const cachedLogs=localStorage.getItem("t4t-logs");
+  if(cachedLogs){
+    const parsed=JSON.parse(cachedLogs);
+    userLogCache.manu=parsed.manu||[];
+    userLogCache.teju=parsed.teju||[];
+    logCache=userLogCache[currentUser]||[];
+  }
+  const cachedHist=localStorage.getItem("t4t-hist");
+  if(cachedHist){
+    const parsed=JSON.parse(cachedHist);
+    userHistCache.manu=parsed.manu||[];
+    userHistCache.teju=parsed.teju||[];
+    historyCache=userHistCache[currentUser]||[];
+  }
   updateDateDisplay();
   buildMealSections();
+  // Render immediately from cache
+  renderSummary();
+  renderMealLogs();
+  renderHistory(historyCache);
   document.getElementById("loading").classList.add("hide");
   document.getElementById("main-app").style.display="block";
   setTimeout(()=>document.getElementById("loading").remove(),400);
-  // Load goals from server + data
+  // Refresh goals + data from server in background
   const [gm,gt]=await Promise.all([
     api({action:"getGoals",user:"manu"}),
     api({action:"getGoals",user:"teju"})
   ]);
-  if(!gm.error&&gm.calories){goals.manu={calories:+gm.calories,protein:+gm.protein,carbs:+gm.carbs,fat:+gm.fat};}
-  if(!gt.error&&gt.calories){goals.teju={calories:+gt.calories,protein:+gt.protein,carbs:+gt.carbs,fat:+gt.fat};}
-  localStorage.setItem("t4t-goals",JSON.stringify(goals));
-  await fetchAndRender();
-}
 
 // ── Views ────────────────────────────────────────────────────
 function switchView(v){
@@ -527,8 +541,12 @@ function switchUser(u){
   MEALS.forEach(m=>{pending[m.id]=[];aiResults[m.id]=null;});
   buildMealSections();
   // Show cached data instantly if available
-  if(userLogCache[u]!==null){
-    logCache=userLogCache[u];
+if(userLogCache[u]!==null){
+    logCache=userLogCache[u]||[];
+    renderSummary();
+    renderMealLogs();
+  } else {
+    logCache=[];
     renderSummary();
     renderMealLogs();
   }
@@ -791,10 +809,19 @@ async function fetchAndRender(){
   const logData=await api({action:"getLog",user:currentUser,date:currentDate});
   logCache=logData.entries||[];
   userLogCache[currentUser]=[...logCache];
+  // Persist to localStorage so next load is instant
+  localStorage.setItem("t4t-logs",JSON.stringify({
+    manu:currentUser==="manu"?logCache:userLogCache.manu||[],
+    teju:currentUser==="teju"?logCache:userLogCache.teju||[]
+  }));
   renderSummary();renderMealLogs();
   api({action:"getHistory",user:currentUser}).then(histData=>{
     historyCache=histData.history||[];
     userHistCache[currentUser]=[...historyCache];
+    localStorage.setItem("t4t-hist",JSON.stringify({
+      manu:currentUser==="manu"?historyCache:userHistCache.manu||[],
+      teju:currentUser==="teju"?historyCache:userHistCache.teju||[]
+    }));
     renderHistory(historyCache);
     if(currentView==="progress")renderProgressTab();
   });
