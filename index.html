@@ -509,11 +509,18 @@ async function init(){
   renderSummary();
   renderMealLogs();
   renderHistory(historyCache);
-  // Refresh goals + data from server in background
-  const [gm,gt]=await Promise.all([
+// Refresh goals + data from server in background
+  Promise.all([
     api({action:"getGoals",user:"manu"}),
     api({action:"getGoals",user:"teju"})
-  ]);
+  ]).then(([gm,gt])=>{
+    if(!gm.error&&gm.calories) goals.manu={calories:+gm.calories,protein:+gm.protein,carbs:+gm.carbs,fat:+gm.fat};
+    if(!gt.error&&gt.calories) goals.teju={calories:+gt.calories,protein:+gt.protein,carbs:+gt.carbs,fat:+gt.fat};
+    localStorage.setItem("t4t-goals",JSON.stringify(goals));
+    renderSummary();
+  });
+  fetchAndRender();
+}
 
 // ── Views ────────────────────────────────────────────────────
 function switchView(v){
