@@ -446,7 +446,10 @@ async function searchFood(){
   document.getElementById("error-tip").classList.remove("show");
   document.getElementById("ai-result").classList.remove("show");
   try{
-    const data=await api({action:"lookupFood",query:q});
+    const qty = document.getElementById("qty-in").value || "1";
+const unit = document.getElementById("unit-select").value;
+const fullQuery = qty + " " + unit + " " + q;
+const data=await api({action:"lookupFood",query:fullQuery});
     if(data.error||!data.food) throw new Error(data.error||"No food");
     const j=data.food;
     aiData={name:j.name,cal:+j.cal,p:+j.p,c:+j.c,f:+j.f};
