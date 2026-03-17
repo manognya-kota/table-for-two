@@ -362,6 +362,11 @@ function calcMacros(cal){
 
 // ── Init ──────────────────────────────────────────────────────
 async function init(){
+  
+  // Load cached goals instantly from localStorage
+const cachedGoals=localStorage.getItem("t4t-goals");
+if(cachedGoals) Object.assign(goals,JSON.parse(cachedGoals));
+  
   updateDateDisplay();
   buildMealSections();
   // Show app immediately, load data in background
@@ -555,26 +560,34 @@ async function logCurrent(mealId){
   const qty=parseFloat(document.getElementById("qty-"+mealId).value)||1;
   const unit=document.getElementById("unit-"+mealId).value;
   const foodName=document.getElementById("fin-"+mealId).value.trim()||ai.name;
-  const btn=document.getElementById("bli-"+mealId);
-  btn.disabled=true;btn.textContent="saving…";
-  try{
-    await api({action:"addEntry",user:currentUser,date:currentDate,meal:mealId,
-      foodName,calories:Math.round(ai.cal),protein:Math.round(ai.p),
-      carbs:Math.round(ai.c),fat:Math.round(ai.f),qty,unit});
-    aiResults[mealId]=null;
-    document.getElementById("ap-"+mealId).classList.remove("show");
-    document.getElementById("fin-"+mealId).value="";
-    document.getElementById("qty-"+mealId).value=1;
-    document.getElementById("unit-"+mealId).value="serving";
-    renderAll();
-  }catch(e){}
-  btn.disabled=false;btn.textContent="log to "+MEALS.find(m=>m.id===mealId).label.toLowerCase();
+  const entry={id:"temp-"+Date.now(),meal:mealId,foodName,
+    calories:Math.round(ai.cal),protein:Math.round(ai.p),
+    carbs:Math.round(ai.c),fat:Math.round(ai.f),qty,unit};
+  // Update UI instantly
+  logCache.push(entry);
+  renderSummary();
+  renderMealLogs();
+  // Clear form instantly
+  aiResults[mealId]=null;
+  document.getElementById("ap-"+mealId).classList.remove("show");
+  document.getElementById("fin-"+mealId).value="";
+  document.getElementById("qty-"+mealId).value=1;
+  document.getElementById("unit-"+mealId).value="serving";
+  // Save in background
+  api({action:"addEntry",user:currentUser,date:currentDate,meal:mealId,
+    foodName,calories:entry.calories,protein:entry.protein,
+    carbs:entry.carbs,fat:entry.fat,qty,unit}).then(res=>{
+      // Replace temp id with real id from sheet
+      if(res.id){
+        const i=logCache.findIndex(e=>e.id===entry.id);
+        if(i>-1) logCache[i].id=res.id;
+      }
+  });
 }
 
 // ── Log all pending ───────────────────────────────────────────
 async function logAll(mealId){
   const items=[...pending[mealId]];
-  // Also include current AI result if showing
   const ai=aiResults[mealId];
   if(ai&&document.getElementById("ap-"+mealId).classList.contains("show")){
     const qty=parseFloat(document.getElementById("qty-"+mealId).value)||1;
@@ -583,24 +596,28 @@ async function logAll(mealId){
     items.push({...ai,qty,unit,name:foodName});
   }
   if(!items.length)return;
-  const btn=document.getElementById("lab-"+mealId);
-  btn.disabled=true;btn.textContent="saving…";
-  try{
-    await Promise.all(items.map(item=>api({
-      action:"addEntry",user:currentUser,date:currentDate,meal:mealId,
+  // Update UI instantly
+  items.forEach(item=>{
+    logCache.push({id:"temp-"+Date.now()+Math.random(),meal:mealId,
       foodName:item.name,calories:Math.round(item.cal),protein:Math.round(item.p),
-      carbs:Math.round(item.c),fat:Math.round(item.f),qty:item.qty,unit:item.unit
-    })));
-    pending[mealId]=[];
-    aiResults[mealId]=null;
-    document.getElementById("ap-"+mealId).classList.remove("show");
-    document.getElementById("fin-"+mealId).value="";
-    document.getElementById("qty-"+mealId).value=1;
-    document.getElementById("unit-"+mealId).value="serving";
-    renderPendingBasket(mealId);
-    renderAll();
-  }catch(e){}
-  btn.disabled=false;btn.textContent="log all to "+MEALS.find(m=>m.id===mealId).label.toLowerCase();
+      carbs:Math.round(item.c),fat:Math.round(item.f),qty:item.qty,unit:item.unit});
+  });
+  renderSummary();
+  renderMealLogs();
+  // Clear form instantly
+  pending[mealId]=[];
+  aiResults[mealId]=null;
+  document.getElementById("ap-"+mealId).classList.remove("show");
+  document.getElementById("fin-"+mealId).value="";
+  document.getElementById("qty-"+mealId).value=1;
+  document.getElementById("unit-"+mealId).value="serving";
+  renderPendingBasket(mealId);
+  // Save all in background
+  Promise.all(items.map(item=>api({
+    action:"addEntry",user:currentUser,date:currentDate,meal:mealId,
+    foodName:item.name,calories:Math.round(item.cal),protein:Math.round(item.p),
+    carbs:Math.round(item.c),fat:Math.round(item.f),qty:item.qty,unit:item.unit
+  })));
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -687,8 +704,12 @@ function renderHistory(history){
 }
 
 async function deleteEntry(id){
-  await api({action:"deleteEntry",id:String(id)});
-  renderAll();
+  // Remove from UI instantly
+  logCache=logCache.filter(e=>String(e.id)!==String(id));
+  renderSummary();
+  renderMealLogs();
+  // Delete in background
+  api({action:"deleteEntry",id:String(id)});
 }
 
 // ── Goals ─────────────────────────────────────────────────────
@@ -710,6 +731,7 @@ async function saveGoals(){
   const cal=parseInt(document.getElementById("g-cal").value)||2000;
   const m=calcMacros(cal);
   goals[currentUser]={calories:cal,protein:m.protein,carbs:m.carbs,fat:m.fat};
+localStorage.setItem("t4t-goals", JSON.stringify(goals)); // ← add this
   await api({action:"setGoals",user:currentUser,calories:cal,protein:m.protein,carbs:m.carbs,fat:m.fat});
   closeGoals();
   renderSummary();
