@@ -476,10 +476,10 @@ function getScaledMacros(){
   const q=parseFloat(document.getElementById("qty-in").value)||1;
   const unit=document.getElementById("unit-select").value;
   return{
-    cal:Math.round(aiData.cal*q),
-    p:Math.round(aiData.p*q),
-    c:Math.round(aiData.c*q),
-    f:Math.round(aiData.f*q),
+    cal:Math.round(aiData.cal),
+    p:Math.round(aiData.p),
+    c:Math.round(aiData.c),
+    f:Math.round(aiData.f),
     qty:q,
     unit:unit
   };
