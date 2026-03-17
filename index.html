@@ -362,18 +362,20 @@ function calcMacros(cal){
 
 // ── Init ──────────────────────────────────────────────────────
 async function init(){
+  updateDateDisplay();
+  buildMealSections();
+  // Show app immediately, load data in background
+  document.getElementById("loading").classList.add("hide");
+  document.getElementById("main-app").style.display="block";
+  setTimeout(()=>document.getElementById("loading").remove(),400);
+  // Now load goals and data
   const [gm,gt]=await Promise.all([
     api({action:"getGoals",user:"manu"}),
     api({action:"getGoals",user:"teju"})
   ]);
   if(!gm.error&&gm.calories) goals.manu={calories:+gm.calories,protein:+gm.protein,carbs:+gm.carbs,fat:+gm.fat};
   if(!gt.error&&gt.calories) goals.teju={calories:+gt.calories,protein:+gt.protein,carbs:+gt.carbs,fat:+gt.fat};
-  updateDateDisplay();
-  buildMealSections();
   await renderAll();
-  document.getElementById("loading").classList.add("hide");
-  document.getElementById("main-app").style.display="block";
-  setTimeout(()=>document.getElementById("loading").remove(),400);
 }
 
 // ── User / date ───────────────────────────────────────────────
@@ -603,14 +605,15 @@ async function logAll(mealId){
 
 // ── Render ────────────────────────────────────────────────────
 async function renderAll(){
-  const [logData,histData]=await Promise.all([
-    api({action:"getLog",user:currentUser,date:currentDate}),
-    api({action:"getHistory",user:currentUser})
-  ]);
+  // Load log first (most important), history separately
+  const logData=await api({action:"getLog",user:currentUser,date:currentDate});
   logCache=logData.entries||[];
   renderSummary();
   renderMealLogs();
-  renderHistory(histData.history||[]);
+  // Load history in background without blocking
+  api({action:"getHistory",user:currentUser}).then(histData=>{
+    renderHistory(histData.history||[]);
+  });
 }
 
 function renderSummary(){
