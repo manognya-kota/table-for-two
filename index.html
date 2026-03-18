@@ -1077,7 +1077,7 @@ function renderSummary(){
       if(!line){
         line=document.createElement("div");
         line.className="goal-line";
-        line.style.cssText="position:absolute;left:0;right:0;height:2.5px;background:#fff;border-radius:2px;pointer-events:none";
+        line.style.cssText="position:absolute;left:0;right:0;height:1.5px;background:#791F1F;border-radius:2px;pointer-events:none"
         track.appendChild(line);
       }
       line.style.bottom=Math.round(goal/val*100)+"%";
@@ -1088,7 +1088,7 @@ function renderSummary(){
       valEl.style.color="";
       valEl.textContent=Math.round(val)+"g";
       lblEl.style.color="";
-      lblEl.textContent="of "+goal+"g";
+      lblEl.textContent=Math.round(val)+"g of "+goal+"g";
       // Hide goal line
       const line=track.querySelector(".goal-line");
       if(line) line.style.display="none";
