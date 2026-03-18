@@ -791,12 +791,22 @@ async function saveEdit(){
   const newUnit=document.getElementById("edit-unit").value;
   let newCal=editingEntry.calories,newP=editingEntry.protein,newC=editingEntry.carbs,newF=editingEntry.fat;
   const changed=true;
-  if(changed){
-    try{
-      const data=await api({action:"lookupFood",query:newQty+" "+newUnit+" "+newName});
-      if(data.food){newCal=Math.round(data.food.cal);newP=Math.round(data.food.p);newC=Math.round(data.food.c);newF=Math.round(data.food.f);}
-    }catch(e){}
-  }
+  
+  try{
+    const query=newQty+" "+newUnit+" "+newName;
+    console.log("Looking up:", query);
+    const data=await api({action:"lookupFood",query});
+    console.log("Got back:", JSON.stringify(data));
+    if(data.food){newCal=Math.round(data.food.cal);newP=Math.round(data.food.p);newC=Math.round(data.food.c);newF=Math.round(data.food.f);}
+    console.log("New macros:", newCal, newP, newC, newF);
+  }catch(e){console.error("Lookup failed:", e);}
+  
+  // if(changed){
+//  try{
+  //    const data=await api({action:"lookupFood",query:newQty+" "+newUnit+" "+newName});
+    //  if(data.food){newCal=Math.round(data.food.cal);newP=Math.round(data.food.p);newC=Math.round(data.food.c);newF=Math.round(data.food.f);}
+   // }catch(e){}
+ // }
   // Optimistic update in cache
   const idx=logCache.findIndex(e=>String(e.id)===String(editingEntry.id));
   if(idx>-1){
