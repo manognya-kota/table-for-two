@@ -365,20 +365,30 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
 <!-- Goals modal -->
 <div class="overlay" id="goals-overlay" onclick="if(event.target===this)closeGoals()">
   <div class="modal">
-    <h3>daily calorie goal — <span id="goals-user-lbl">manu</span></h3>
-    <div class="modal-sub">Set your calorie target. Macros are calculated automatically (30% protein · 40% carbs · 30% fat).</div>
+    <h3>daily goals — <span id="goals-user-lbl">manu</span></h3>
+    <div class="modal-sub">Set your calorie target. Macros auto-calculate, or edit them manually below.</div>
     <div class="modal-field">
       <label>Daily Calories</label>
       <input id="g-cal" type="number" value="2000" oninput="previewMacros()"/>
     </div>
-    <div class="macro-preview">
-      <div class="mp-item"><div class="mp-val" id="mp-p">150</div><div class="mp-lbl">Protein g</div></div>
-      <div class="mp-item"><div class="mp-val" id="mp-c">200</div><div class="mp-lbl">Carbs g</div></div>
-      <div class="mp-item"><div class="mp-val" id="mp-f">67</div><div class="mp-lbl">Fat g</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px">
+      <div class="modal-field" style="margin-bottom:0">
+        <label>Protein (g)</label>
+        <input id="g-p-in" type="number" value="150"/>
+      </div>
+      <div class="modal-field" style="margin-bottom:0">
+        <label>Carbs (g)</label>
+        <input id="g-c-in" type="number" value="200"/>
+      </div>
+      <div class="modal-field" style="margin-bottom:0">
+        <label>Fat (g)</label>
+        <input id="g-f-in" type="number" value="67"/>
+      </div>
     </div>
+    <div style="font-size:11px;color:var(--hint);margin-bottom:18px;text-align:center">auto-calculated from calories — edit freely</div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeGoals()">cancel</button>
-      <button class="btn-save" onclick="saveGoals()">save goal</button>
+      <button class="btn-save" onclick="saveGoals()">save goals</button>
     </div>
   </div>
 </div>
@@ -825,9 +835,12 @@ async function saveEdit(){
 // ── Fetch & render ────────────────────────────────────────────
 async function fetchAndRender(){
   const logData=await api({action:"getLog",user:currentUser,date:currentDate});
-  logCache=logData.entries||[];
+  const newEntries=logData.entries||[];
+  // Only re-render if data is actually different from cache
+  const changed=JSON.stringify(newEntries)!==JSON.stringify(logCache);
+  logCache=newEntries;
   saveLogCache();
-  renderSummary();renderMealLogs();
+  if(changed){renderSummary();renderMealLogs();}
   api({action:"getHistory",user:currentUser}).then(histData=>{
     historyCache=histData.history||[];
     userHistCache[currentUser]=[...historyCache];
@@ -1064,23 +1077,29 @@ function renderMonthlyProgress(){
 function previewMacros(){
   const cal=parseInt(document.getElementById("g-cal").value)||2000;
   const m=calcMacros(cal);
-  document.getElementById("mp-p").textContent=m.protein;
-  document.getElementById("mp-c").textContent=m.carbs;
-  document.getElementById("mp-f").textContent=m.fat;
+  // Only auto-fill if user hasnt manually changed them
+  document.getElementById("g-p-in").value=m.protein;
+  document.getElementById("g-c-in").value=m.carbs;
+  document.getElementById("g-f-in").value=m.fat;
 }
 function openGoals(){
+  const g=goals[currentUser];
   document.getElementById("goals-user-lbl").textContent=currentUser;
-  document.getElementById("g-cal").value=goals[currentUser].calories;
-  previewMacros();
+  document.getElementById("g-cal").value=g.calories;
+  document.getElementById("g-p-in").value=g.protein;
+  document.getElementById("g-c-in").value=g.carbs;
+  document.getElementById("g-f-in").value=g.fat;
   document.getElementById("goals-overlay").classList.add("show");
 }
 function closeGoals(){document.getElementById("goals-overlay").classList.remove("show")}
 async function saveGoals(){
   const cal=parseInt(document.getElementById("g-cal").value)||2000;
-  const m=calcMacros(cal);
-  goals[currentUser]={calories:cal,...m};
+  const protein=parseInt(document.getElementById("g-p-in").value)||calcMacros(cal).protein;
+  const carbs=parseInt(document.getElementById("g-c-in").value)||calcMacros(cal).carbs;
+  const fat=parseInt(document.getElementById("g-f-in").value)||calcMacros(cal).fat;
+  goals[currentUser]={calories:cal,protein,carbs,fat};
   localStorage.setItem("t4t-goals",JSON.stringify(goals));
-  api({action:"setGoals",user:currentUser,calories:cal,...m});
+  api({action:"setGoals",user:currentUser,calories:cal,protein,carbs,fat});
   closeGoals();
   renderSummary();
 }
