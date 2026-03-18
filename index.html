@@ -790,7 +790,7 @@ async function saveEdit(){
   const newQty=parseFloat(document.getElementById("edit-qty").value)||1;
   const newUnit=document.getElementById("edit-unit").value;
   let newCal=editingEntry.calories,newP=editingEntry.protein,newC=editingEntry.carbs,newF=editingEntry.fat;
-  const changed=newQty!==+editingEntry.qty||newUnit!==editingEntry.unit||newName!==editingEntry.foodName;
+  const changed=true;
   if(changed){
     try{
       const data=await api({action:"lookupFood",query:newQty+" "+newUnit+" "+newName});
