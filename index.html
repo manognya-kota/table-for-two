@@ -652,7 +652,8 @@ async function searchFood(mealId){
   const unit=document.getElementById("unit-"+mealId).value;
   const foodName=nameIn.value.trim();
   if(!foodName)return;
-  const query=qty+" "+unit+" "+foodName;
+  // Always ask for 1 unit so we can scale accurately by qty
+  const query="1 "+unit+" "+foodName;
   const btn=document.getElementById("aib-"+mealId);
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
   document.getElementById("err-"+mealId).classList.remove("show");
@@ -661,13 +662,14 @@ async function searchFood(mealId){
     const data=await api({action:"lookupFood",query});
     if(data.error||!data.food)throw new Error("no food");
     const j=data.food;
-    aiResults[mealId]={name:foodName,cal:+j.cal,p:+j.p,c:+j.c,f:+j.f,qty,unit};
+    // Scale by qty here
+    aiResults[mealId]={name:foodName,cal:+j.cal*qty,p:+j.p*qty,c:+j.c*qty,f:+j.f*qty,qty,unit};
     document.getElementById("apn-"+mealId).textContent=qty+" "+unit+" "+foodName;
     document.getElementById("app-"+mealId).innerHTML=
-      `<div class="ai-pill">${Math.round(j.cal)} kcal</div>`+
-      `<div class="ai-pill">${Math.round(j.p)}g protein</div>`+
-      `<div class="ai-pill">${Math.round(j.c)}g carbs</div>`+
-      `<div class="ai-pill">${Math.round(j.f)}g fat</div>`;
+      `<div class="ai-pill">${Math.round(j.cal*qty)} kcal</div>`+
+      `<div class="ai-pill">${Math.round(j.p*qty)}g protein</div>`+
+      `<div class="ai-pill">${Math.round(j.c*qty)}g carbs</div>`+
+      `<div class="ai-pill">${Math.round(j.f*qty)}g fat</div>`;
     document.getElementById("ap-"+mealId).classList.add("show");
   }catch(e){document.getElementById("err-"+mealId).classList.add("show");}
   btn.disabled=false;btn.textContent="Ask AI";
@@ -790,23 +792,16 @@ async function saveEdit(){
   const newQty=parseFloat(document.getElementById("edit-qty").value)||1;
   const newUnit=document.getElementById("edit-unit").value;
   let newCal=editingEntry.calories,newP=editingEntry.protein,newC=editingEntry.carbs,newF=editingEntry.fat;
-  const changed=true;
-  
   try{
-    const query=newQty+" "+newUnit+" "+newName;
-    console.log("Looking up:", query);
-    const data=await api({action:"lookupFood",query});
-    console.log("Got back:", JSON.stringify(data));
-    if(data.food){newCal=Math.round(data.food.cal);newP=Math.round(data.food.p);newC=Math.round(data.food.c);newF=Math.round(data.food.f);}
-    console.log("New macros:", newCal, newP, newC, newF);
-  }catch(e){console.error("Lookup failed:", e);}
-  
-  // if(changed){
-//  try{
-  //    const data=await api({action:"lookupFood",query:newQty+" "+newUnit+" "+newName});
-    //  if(data.food){newCal=Math.round(data.food.cal);newP=Math.round(data.food.p);newC=Math.round(data.food.c);newF=Math.round(data.food.f);}
-   // }catch(e){}
- // }
+    // Always ask for 1 unit then scale by qty for accurate results
+    const data=await api({action:"lookupFood",query:"1 "+newUnit+" "+newName});
+    if(data.food){
+      newCal=Math.round(data.food.cal*newQty);
+      newP=Math.round(data.food.p*newQty);
+      newC=Math.round(data.food.c*newQty);
+      newF=Math.round(data.food.f*newQty);
+    }
+  }catch(e){}
   // Optimistic update in cache
   const idx=logCache.findIndex(e=>String(e.id)===String(editingEntry.id));
   if(idx>-1){
