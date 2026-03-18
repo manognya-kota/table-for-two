@@ -146,7 +146,7 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
 .prog-section{margin:0 16px 14px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:0 1px 5px var(--shadow)}
 .prog-section h3{font-family:'Lora',serif;font-size:17px;font-weight:400;margin-bottom:14px}
 
-/* Daily stats grid */
+/* Daily stats */
 .daily-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .stat-box{background:var(--tan);border-radius:12px;padding:12px}
 .stat-val{font-family:'Lora',serif;font-size:24px;font-weight:400;color:var(--charcoal);line-height:1}
@@ -156,15 +156,10 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
 /* Weekly chart */
 .week-bars{display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px}
 .week-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
-.week-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.week-bar-track{flex:1;width:100%;background:var(--tan);border-radius:4px;overflow:hidden;display:flex;align-items:flex-end}
-.week-bar-fill{width:100%;border-radius:4px;transition:height 0.4s ease;min-height:2px}
 .week-bar-lbl{font-size:10px;color:var(--muted)}
 .week-bar-val{font-size:10px;color:var(--muted);text-align:center}
 .week-goal-line{border-top:1.5px dashed var(--hint);margin:0 0 6px;position:relative}
 .week-goal-line span{position:absolute;right:0;top:-10px;font-size:10px;color:var(--hint)}
-
-/* Weekly summary row */
 .week-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
 .ws-item{text-align:center;background:var(--tan);border-radius:10px;padding:10px 6px}
 .ws-val{font-family:'Lora',serif;font-size:18px;font-weight:400;color:var(--charcoal)}
@@ -182,7 +177,7 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
 .over-goal{background:var(--rust)}
 .month-macros{font-size:11px;color:var(--hint);text-align:right;min-width:80px}
 
-/* ── History section (in log view) ── */
+/* ── History section ── */
 .hist-section{margin:0 16px 12px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:0 1px 5px var(--shadow)}
 .hist-section h3{font-family:'Lora',serif;font-size:16px;font-weight:400;margin-bottom:12px}
 .hist-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--tan);font-size:13px}
@@ -219,16 +214,15 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
 .edit-name-in{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--cream);color:var(--charcoal);outline:none;margin-bottom:12px}
 .edit-name-in:focus{border-color:var(--forest)}
 
+/* ── Bottom nav ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;max-width:520px;margin:0 auto}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 14px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--hint);cursor:pointer;transition:all 0.15s;letter-spacing:0.3px}
+.bnav-btn.active{color:var(--forest)}
+
 /* ── Spinner ── */
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── Bottom nav ── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;max-width:520px;margin:0 auto;}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 14px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--hint);cursor:pointer;transition:all 0.15s;letter-spacing:0.3px}
-.bnav-btn.active{color:var(--forest)}
-.bnav-btn svg{transition:stroke 0.15s}
-  
 /* ── Loading ── */
 .loading-screen{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;z-index:300;flex-direction:column;gap:12px;transition:opacity 0.3s}
 .loading-screen.hide{opacity:0;pointer-events:none}
@@ -250,17 +244,6 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
   <div class="header">
     <h1>table <em>for two</em></h1>
     <p>manu &amp; teju's shared macro tracker</p>
-    <!-- Bottom nav -->
-  <div class="bottom-nav">
-    <button class="bnav-btn active" id="nav-log" onclick="switchView('log')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Log</span>
-    </button>
-    <button class="bnav-btn" id="nav-progress" onclick="switchView('progress')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span>Progress</span>
-    </button>
-  </div>
   </div>
 
   <!-- User tabs -->
@@ -268,7 +251,6 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
     <button class="user-tab active" id="tab-manu" onclick="switchUser('manu')">manu</button>
     <button class="user-tab" id="tab-teju" onclick="switchUser('teju')">teju</button>
   </div>
-
 
   <!-- ── LOG VIEW ── -->
   <div class="view active" id="view-log">
@@ -341,21 +323,14 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
       <button class="prog-tab" id="pt-weekly" onclick="switchProgTab('weekly')">Weekly</button>
       <button class="prog-tab" id="pt-monthly" onclick="switchProgTab('monthly')">Monthly</button>
     </div>
-
-    <!-- Daily progress -->
     <div id="prog-daily">
       <div class="prog-section">
         <h3 id="prog-daily-title">Today's breakdown</h3>
         <div class="daily-grid" id="daily-grid"></div>
         <div class="macro-bars-wrap" id="daily-macro-bars"></div>
       </div>
-      <div class="prog-section">
-        <h3>meal breakdown</h3>
-        <div id="daily-meals"></div>
-      </div>
+      <div class="prog-section"><h3>meal breakdown</h3><div id="daily-meals"></div></div>
     </div>
-
-    <!-- Weekly progress -->
     <div id="prog-weekly" style="display:none">
       <div class="prog-section">
         <h3>last 7 days — calories</h3>
@@ -363,23 +338,27 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
         <div class="week-goal-line"><span>goal</span></div>
         <div class="week-summary" id="week-summary"></div>
       </div>
-      <div class="prog-section">
-        <h3>day-on-day</h3>
-        <div id="week-detail"></div>
-      </div>
+      <div class="prog-section"><h3>day-on-day</h3><div id="week-detail"></div></div>
     </div>
-
-    <!-- Monthly progress -->
     <div id="prog-monthly" style="display:none">
       <div class="prog-section">
         <h3 id="month-title">this month</h3>
         <div class="week-summary" id="month-summary"></div>
       </div>
-      <div class="prog-section">
-        <h3>daily log</h3>
-        <div id="month-detail"></div>
-      </div>
+      <div class="prog-section"><h3>daily log</h3><div id="month-detail"></div></div>
     </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <button class="bnav-btn active" id="nav-log" onclick="switchView('log')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Log</span>
+    </button>
+    <button class="bnav-btn" id="nav-progress" onclick="switchView('progress')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Progress</span>
+    </button>
   </div>
 </div>
 
@@ -421,7 +400,7 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
     </div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeEdit()">cancel</button>
-      <button class="btn-save" onclick="saveEdit()">save changes</button>
+      <button class="btn-save" id="edit-save-btn" onclick="saveEdit()">save changes</button>
     </div>
   </div>
 </div>
@@ -449,8 +428,8 @@ let historyCache=[];
 let pending={breakfast:[],lunch:[],dinner:[],snacks:[]};
 let aiResults={breakfast:null,lunch:null,dinner:null,snacks:null};
 let editingEntry=null;
-// Per-user log caches for instant tab switching
-let userLogCache={manu:null,teju:null};
+// Cache keyed by "user-date" for log, "user" for history
+let userLogCache={};
 let userHistCache={manu:null,teju:null};
 
 // ── Date helpers ──────────────────────────────────────────────
@@ -473,6 +452,7 @@ function getMonthName(k){
   const [y,m]=k.split('-').map(Number);
   return new Date(y,m-1,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
 }
+function logCacheKey(user,date){return user+'-'+date;}
 
 // ── API ───────────────────────────────────────────────────────
 async function api(params){
@@ -488,36 +468,41 @@ function calcMacros(cal){
 }
 
 // ── Init ──────────────────────────────────────────────────────
-async function init(){
-  // Load goals from localStorage instantly
-  const cached=localStorage.getItem("t4t-goals");
-  if(cached) Object.assign(goals,JSON.parse(cached));
-  // Load log cache from localStorage instantly
+function init(){
+  // Load everything from localStorage — zero network delay
+  const cachedGoals=localStorage.getItem("t4t-goals");
+  if(cachedGoals) Object.assign(goals,JSON.parse(cachedGoals));
+
+  // Load log cache (keyed by user-date)
   const cachedLogs=localStorage.getItem("t4t-logs");
-  if(cachedLogs){
-    const parsed=JSON.parse(cachedLogs);
-    userLogCache.manu=parsed.manu||[];
-    userLogCache.teju=parsed.teju||[];
-    logCache=userLogCache[currentUser]||[];
-  }
+  if(cachedLogs) userLogCache=JSON.parse(cachedLogs);
+
+  // Load history cache
   const cachedHist=localStorage.getItem("t4t-hist");
   if(cachedHist){
-    const parsed=JSON.parse(cachedHist);
-    userHistCache.manu=parsed.manu||[];
-    userHistCache.teju=parsed.teju||[];
-    historyCache=userHistCache[currentUser]||[];
+    const p=JSON.parse(cachedHist);
+    userHistCache.manu=p.manu||null;
+    userHistCache.teju=p.teju||null;
   }
+
+  // Use today's cache for current user — if no cache for today, start empty (not yesterday's data)
+  logCache=userLogCache[logCacheKey(currentUser,currentDate)]||[];
+  historyCache=userHistCache[currentUser]||[];
+
   updateDateDisplay();
   buildMealSections();
-  // Show app IMMEDIATELY — no waiting
+
+  // Show app immediately — all synchronous above
   document.getElementById("loading").classList.add("hide");
   document.getElementById("main-app").style.display="block";
   setTimeout(()=>document.getElementById("loading").remove(),400);
+
   // Render from cache right away
   renderSummary();
   renderMealLogs();
   renderHistory(historyCache);
-// Refresh goals + data from server in background
+
+  // All server calls fire in background — never block UI
   Promise.all([
     api({action:"getGoals",user:"manu"}),
     api({action:"getGoals",user:"teju"})
@@ -530,7 +515,7 @@ async function init(){
   fetchAndRender();
 }
 
-// ── Views ────────────────────────────────────────────────────
+// ── Views ─────────────────────────────────────────────────────
 function switchView(v){
   currentView=v;
   document.getElementById("view-log").classList.toggle("active",v==="log");
@@ -555,19 +540,20 @@ function switchUser(u){
   document.getElementById("tab-teju").classList.toggle("active",u==="teju");
   MEALS.forEach(m=>{pending[m.id]=[];aiResults[m.id]=null;});
   buildMealSections();
-  // Always render from cache instantly
-  logCache=userLogCache[u]||[];
+
+  // Load from cache instantly — use date-specific key so no bleed between days
+  logCache=userLogCache[logCacheKey(u,currentDate)]||[];
   historyCache=userHistCache[u]||[];
   renderSummary();
   renderMealLogs();
   renderHistory(historyCache);
   if(currentView==="progress") renderProgressTab();
-  // Only fetch from server if no cache exists for this user
-  if(userLogCache[u]===null || userHistCache[u]===null){
+
+  // Fetch fresh data in background only if cache is missing
+  if(!userLogCache[logCacheKey(u,currentDate)]||!userHistCache[u]){
     fetchAndRender();
   } else {
-    // Refresh silently in background without blocking
-    setTimeout(()=>fetchAndRender(), 100);
+    setTimeout(()=>fetchAndRender(),200);
   }
 }
 
@@ -580,8 +566,13 @@ function changeDay(d){
   updateDateDisplay();
   MEALS.forEach(m=>{pending[m.id]=[];aiResults[m.id]=null;});
   buildMealSections();
+  // Show cached data for this date instantly if available
+  logCache=userLogCache[logCacheKey(currentUser,currentDate)]||[];
+  renderSummary();
+  renderMealLogs();
   fetchAndRender();
 }
+
 function updateDateDisplay(){
   const lbl=formatDateLabel(currentDate);
   document.getElementById("date-main").textContent=lbl.main||currentDate;
@@ -710,6 +701,12 @@ function renderPendingBasket(mealId){
     </div>`).join("");
 }
 
+// ── Save log cache helper ─────────────────────────────────────
+function saveLogCache(){
+  userLogCache[logCacheKey(currentUser,currentDate)]=[...logCache];
+  try{localStorage.setItem("t4t-logs",JSON.stringify(userLogCache));}catch(e){}
+}
+
 // ── Log current (optimistic) ──────────────────────────────────
 function logCurrent(mealId){
   const ai=aiResults[mealId];if(!ai)return;
@@ -720,7 +717,7 @@ function logCurrent(mealId){
     calories:Math.round(ai.cal),protein:Math.round(ai.p),
     carbs:Math.round(ai.c),fat:Math.round(ai.f),qty,unit};
   logCache.push(entry);
-  userLogCache[currentUser]=[...logCache];
+  saveLogCache();
   renderSummary();renderMealLogs();
   aiResults[mealId]=null;
   document.getElementById("ap-"+mealId).classList.remove("show");
@@ -730,7 +727,7 @@ function logCurrent(mealId){
   api({action:"addEntry",user:currentUser,date:currentDate,meal:mealId,
     foodName,calories:entry.calories,protein:entry.protein,
     carbs:entry.carbs,fat:entry.fat,qty,unit}).then(res=>{
-      if(res.id){const i=logCache.findIndex(e=>e.id===entry.id);if(i>-1)logCache[i].id=res.id;}
+      if(res.id){const i=logCache.findIndex(e=>e.id===entry.id);if(i>-1){logCache[i].id=res.id;saveLogCache();}}
   });
 }
 
@@ -753,10 +750,10 @@ function logAll(mealId){
     api({action:"addEntry",user:currentUser,date:currentDate,meal:mealId,
       foodName:item.name,calories:entry.calories,protein:entry.protein,
       carbs:entry.carbs,fat:entry.fat,qty:item.qty,unit:item.unit}).then(res=>{
-        if(res.id){const i=logCache.findIndex(e=>e.id===entry.id);if(i>-1)logCache[i].id=res.id;}
+        if(res.id){const i=logCache.findIndex(e=>e.id===entry.id);if(i>-1){logCache[i].id=res.id;saveLogCache();}}
     });
   });
-  userLogCache[currentUser]=[...logCache];
+  saveLogCache();
   renderSummary();renderMealLogs();
   pending[mealId]=[];aiResults[mealId]=null;
   document.getElementById("ap-"+mealId).classList.remove("show");
@@ -769,7 +766,7 @@ function logAll(mealId){
 // ── Delete (optimistic) ───────────────────────────────────────
 function deleteEntry(id){
   logCache=logCache.filter(e=>String(e.id)!==String(id));
-  userLogCache[currentUser]=[...logCache];
+  saveLogCache();
   renderSummary();renderMealLogs();
   api({action:"deleteEntry",id:String(id)});
 }
@@ -778,7 +775,7 @@ function deleteEntry(id){
 function openEdit(id){
   const entry=logCache.find(e=>String(e.id)===String(id));
   if(!entry)return;
-  editingEntry=entry;
+  editingEntry={...entry};
   document.getElementById("edit-name").value=entry.foodName||"";
   document.getElementById("edit-qty").value=entry.qty||1;
   document.getElementById("edit-unit").value=entry.unit||"serving";
@@ -787,32 +784,36 @@ function openEdit(id){
 function closeEdit(){document.getElementById("edit-overlay").classList.remove("show");editingEntry=null;}
 async function saveEdit(){
   if(!editingEntry)return;
+  const btn=document.getElementById("edit-save-btn");
+  btn.textContent="saving…";btn.disabled=true;
   const newName=document.getElementById("edit-name").value.trim()||editingEntry.foodName;
   const newQty=parseFloat(document.getElementById("edit-qty").value)||1;
   const newUnit=document.getElementById("edit-unit").value;
-  // Re-query AI for new macros if qty/unit changed
   let newCal=editingEntry.calories,newP=editingEntry.protein,newC=editingEntry.carbs,newF=editingEntry.fat;
-  const qtyChanged=newQty!==editingEntry.qty||newUnit!==editingEntry.unit||newName!==editingEntry.foodName;
-  if(qtyChanged){
+  const changed=newQty!==+editingEntry.qty||newUnit!==editingEntry.unit||newName!==editingEntry.foodName;
+  if(changed){
     try{
       const data=await api({action:"lookupFood",query:newQty+" "+newUnit+" "+newName});
       if(data.food){newCal=Math.round(data.food.cal);newP=Math.round(data.food.p);newC=Math.round(data.food.c);newF=Math.round(data.food.f);}
     }catch(e){}
   }
-  // Optimistic update
+  // Optimistic update in cache
   const idx=logCache.findIndex(e=>String(e.id)===String(editingEntry.id));
   if(idx>-1){
     logCache[idx]={...logCache[idx],foodName:newName,qty:newQty,unit:newUnit,
       calories:newCal,protein:newP,carbs:newC,fat:newF};
   }
-  userLogCache[currentUser]=[...logCache];
+  saveLogCache();
   renderSummary();renderMealLogs();
-  closeEdit();
-  // Save: delete old + add new
   const oldId=editingEntry.id;
+  const meal=editingEntry.meal;
+  closeEdit();
+  btn.textContent="save changes";btn.disabled=false;
+  // Delete old + add new, then refresh from server to get correct IDs
   api({action:"deleteEntry",id:String(oldId)}).then(()=>{
-    api({action:"addEntry",user:currentUser,date:currentDate,meal:editingEntry.meal,
-      foodName:newName,calories:newCal,protein:newP,carbs:newC,fat:newF,qty:newQty,unit:newUnit});
+    api({action:"addEntry",user:currentUser,date:currentDate,meal,
+      foodName:newName,calories:newCal,protein:newP,carbs:newC,fat:newF,qty:newQty,unit:newUnit
+    }).then(()=>fetchAndRender());
   });
 }
 
@@ -820,20 +821,15 @@ async function saveEdit(){
 async function fetchAndRender(){
   const logData=await api({action:"getLog",user:currentUser,date:currentDate});
   logCache=logData.entries||[];
-  userLogCache[currentUser]=[...logCache];
-  // Persist to localStorage so next load is instant
-  localStorage.setItem("t4t-logs",JSON.stringify({
-    manu:currentUser==="manu"?logCache:userLogCache.manu||[],
-    teju:currentUser==="teju"?logCache:userLogCache.teju||[]
-  }));
+  saveLogCache();
   renderSummary();renderMealLogs();
   api({action:"getHistory",user:currentUser}).then(histData=>{
     historyCache=histData.history||[];
     userHistCache[currentUser]=[...historyCache];
-    localStorage.setItem("t4t-hist",JSON.stringify({
+    try{localStorage.setItem("t4t-hist",JSON.stringify({
       manu:currentUser==="manu"?historyCache:userHistCache.manu||[],
       teju:currentUser==="teju"?historyCache:userHistCache.teju||[]
-    }));
+    }));}catch(e){}
     renderHistory(historyCache);
     if(currentView==="progress")renderProgressTab();
   });
@@ -866,7 +862,6 @@ function renderSummary(){
 
 // ── Render meal logs ──────────────────────────────────────────
 function renderMealLogs(){
-  // SVG icons
   const binIcon=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>`;
   const editIcon=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
   MEALS.forEach(m=>{
@@ -894,7 +889,7 @@ function renderMealLogs(){
 function renderHistory(history){
   const body=document.getElementById("hist-body");
   const today=todayKey();
-  const filtered=history.filter(d=>String(d.date)!==today).slice(0,7);
+  const filtered=(history||[]).filter(d=>String(d.date)!==today).slice(0,7);
   if(!filtered.length){body.innerHTML='<div class="empty-note">no history yet</div>';return;}
   body.innerHTML=filtered.map(d=>{
     const lbl=formatDateLabel(String(d.date));
@@ -908,7 +903,7 @@ function renderHistory(history){
   }).join("");
 }
 
-// ── Progress rendering ────────────────────────────────────────
+// ── Progress ──────────────────────────────────────────────────
 function renderProgressTab(){
   if(currentProgTab==="daily") renderDailyProgress();
   else if(currentProgTab==="weekly") renderWeeklyProgress();
@@ -917,27 +912,22 @@ function renderProgressTab(){
 
 function renderDailyProgress(){
   const g=goals[currentUser];
-  // Include today's log
-  const allDays=[{date:currentDate,calories:logCache.reduce((a,i)=>a+(+i.calories),0),
+  const today={date:currentDate,
+    calories:logCache.reduce((a,i)=>a+(+i.calories),0),
     protein:logCache.reduce((a,i)=>a+(+i.protein),0),
     carbs:logCache.reduce((a,i)=>a+(+i.carbs),0),
-    fat:logCache.reduce((a,i)=>a+(+i.fat),0)},...historyCache];
-  const today=allDays.find(d=>String(d.date)===currentDate)||{calories:0,protein:0,carbs:0,fat:0};
+    fat:logCache.reduce((a,i)=>a+(+i.fat),0)};
   const lbl=formatDateLabel(currentDate);
-  document.getElementById("prog-daily-title").textContent=(lbl.main==="Today"?"Today's":""+lbl.main+"'s")+" breakdown";
-
+  document.getElementById("prog-daily-title").textContent=(lbl.main==="Today"?"Today's":lbl.main+"'s")+" breakdown";
   document.getElementById("daily-grid").innerHTML=`
     <div class="stat-box"><div class="stat-val">${Math.round(today.calories)}</div><div class="stat-lbl">Calories eaten</div><div class="stat-sub">of ${g.calories} goal</div></div>
     <div class="stat-box"><div class="stat-val">${Math.max(0,g.calories-Math.round(today.calories))}</div><div class="stat-lbl">Remaining</div><div class="stat-sub">${Math.min(100,Math.round(today.calories/g.calories*100))}% used</div></div>
     <div class="stat-box"><div class="stat-val">${Math.round(today.protein)}g</div><div class="stat-lbl">Protein</div><div class="stat-sub">of ${g.protein}g</div></div>
     <div class="stat-box"><div class="stat-val">${Math.round(today.fat)}g</div><div class="stat-lbl">Fat</div><div class="stat-sub">of ${g.fat}g</div></div>`;
-
   document.getElementById("daily-macro-bars").innerHTML=`
     <div class="macro-bar-row"><div class="mbl">Protein</div><div class="mbtrack"><div class="mbfill mb-p" style="width:${Math.min(100,Math.round(today.protein/g.protein*100))}%"></div></div><div class="mbval"><strong>${Math.round(today.protein)}</strong>/${g.protein}g</div></div>
     <div class="macro-bar-row"><div class="mbl">Carbs</div><div class="mbtrack"><div class="mbfill mb-c" style="width:${Math.min(100,Math.round(today.carbs/g.carbs*100))}%"></div></div><div class="mbval"><strong>${Math.round(today.carbs)}</strong>/${g.carbs}g</div></div>
     <div class="macro-bar-row"><div class="mbl">Fat</div><div class="mbtrack"><div class="mbfill mb-f" style="width:${Math.min(100,Math.round(today.fat/g.fat*100))}%"></div></div><div class="mbval"><strong>${Math.round(today.fat)}</strong>/${g.fat}g</div></div>`;
-
-  // Meal breakdown
   const mealTotals=MEALS.map(m=>{
     const items=logCache.filter(e=>e.meal===m.id);
     return{...m,cal:items.reduce((a,i)=>a+(+i.calories),0),count:items.length};
@@ -952,37 +942,36 @@ function renderDailyProgress(){
 
 function renderWeeklyProgress(){
   const g=goals[currentUser];
-  // Build last 7 days including today
+  const today=todayKey();
   const days=[];
   for(let i=6;i>=0;i--){
-    const [yr,mo,dy]=todayKey().split('-').map(Number);
+    const [yr,mo,dy]=today.split('-').map(Number);
     const dt=new Date(yr,mo-1,dy);dt.setDate(dt.getDate()-i);
     const k=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
-    if(k===todayKey()){
+    if(k===today){
       days.push({date:k,calories:logCache.reduce((a,i)=>a+(+i.calories),0),
         protein:logCache.reduce((a,i)=>a+(+i.protein),0),
         carbs:logCache.reduce((a,i)=>a+(+i.carbs),0),
         fat:logCache.reduce((a,i)=>a+(+i.fat),0)});
     }else{
-      const h=historyCache.find(d=>String(d.date)===k);
+      const h=(historyCache||[]).find(d=>String(d.date)===k);
       days.push(h?{...h}:{date:k,calories:0,protein:0,carbs:0,fat:0});
     }
   }
-const maxCal=Math.max(g.calories,...days.map(d=>+d.calories),1);
-  document.getElementById("week-bars").innerHTML=days.map((d,i)=>{
+  const maxCal=Math.max(g.calories,...days.map(d=>+d.calories),1);
+  document.getElementById("week-bars").innerHTML=days.map(d=>{
     const lbl=formatDateLabel(String(d.date));
     const pct=Math.max(2,Math.round((+d.calories/maxCal)*100));
     const isOver=+d.calories>g.calories;
     const cal=Math.round(+d.calories);
     return`<div class="week-bar-wrap">
-      <div class="week-bar-val">${cal?cal:''}</div>
-      <div class="week-bar-track" style="flex:1;width:100%;background:var(--tan);border-radius:6px;overflow:hidden;min-height:80px;display:flex;align-items:flex-end;">
+      <div class="week-bar-val">${cal||''}</div>
+      <div style="flex:1;width:100%;background:var(--tan);border-radius:6px;overflow:hidden;display:flex;align-items:flex-end;">
         <div style="width:100%;height:${pct}%;background:${isOver?'#b05232':'#3d6b43'};border-radius:4px;min-height:3px;transition:height 0.4s ease"></div>
       </div>
       <div class="week-bar-lbl">${lbl.main.substring(0,3)}</div>
     </div>`;
   }).join("");
-
   const logged=days.filter(d=>+d.calories>0);
   const avgCal=logged.length?Math.round(logged.reduce((a,d)=>a+(+d.calories),0)/logged.length):0;
   const daysOnGoal=logged.filter(d=>+d.calories<=g.calories).length;
@@ -991,7 +980,6 @@ const maxCal=Math.max(g.calories,...days.map(d=>+d.calories),1);
     <div class="ws-item"><div class="ws-val">${avgCal}</div><div class="ws-lbl">Avg kcal/day</div></div>
     <div class="ws-item"><div class="ws-val">${daysOnGoal}/${logged.length}</div><div class="ws-lbl">Days on goal</div></div>
     <div class="ws-item"><div class="ws-val">${totalP}g</div><div class="ws-lbl">Total protein</div></div>`;
-
   document.getElementById("week-detail").innerHTML=days.slice().reverse().map(d=>{
     const lbl=formatDateLabel(String(d.date));
     const cal=Math.round(+d.calories);
@@ -1011,35 +999,26 @@ function renderMonthlyProgress(){
   const now=new Date();
   const monthKey=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   document.getElementById("month-title").textContent=getMonthName(monthKey+'-01');
-
-  const allDays=[{date:todayKey(),
+  const today=todayKey();
+  // Merge today + history, deduplicate by date (today wins)
+  const histFiltered=(historyCache||[]).filter(d=>String(d.date)!==today);
+  const todayEntry={date:today,
     calories:logCache.reduce((a,i)=>a+(+i.calories),0),
     protein:logCache.reduce((a,i)=>a+(+i.protein),0),
     carbs:logCache.reduce((a,i)=>a+(+i.carbs),0),
-    fat:logCache.reduce((a,i)=>a+(+i.fat),0)},
-    ...historyCache].filter(d=>String(d.date).startsWith(monthKey));
-
+    fat:logCache.reduce((a,i)=>a+(+i.fat),0)};
+  const allDays=[todayEntry,...histFiltered].filter(d=>String(d.date).startsWith(monthKey));
   const logged=allDays.filter(d=>+d.calories>0);
   const avgCal=logged.length?Math.round(logged.reduce((a,d)=>a+(+d.calories),0)/logged.length):0;
   const daysOn=logged.filter(d=>+d.calories<=g.calories).length;
   const avgP=Math.round(logged.reduce((a,d)=>a+(+d.protein),0)/Math.max(1,logged.length));
-
-  // Summary boxes
   document.getElementById("month-summary").innerHTML=`
     <div class="ws-item"><div class="ws-val">${avgCal}</div><div class="ws-lbl">Avg kcal</div></div>
     <div class="ws-item"><div class="ws-val">${daysOn}/${logged.length}</div><div class="ws-lbl">On goal</div></div>
     <div class="ws-item"><div class="ws-val">${avgP}g</div><div class="ws-lbl">Avg protein</div></div>`;
-
-  // Bar chart — one bar per day logged
   const sorted=allDays.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   const maxCal=Math.max(g.calories,...sorted.map(d=>+d.calories),1);
-
-  if(!sorted.length){
-    document.getElementById("month-detail").innerHTML='<div class="empty-note">no data this month yet</div>';
-    return;
-  }
-
-  // Build bar chart + day labels
+  if(!sorted.length){document.getElementById("month-detail").innerHTML='<div class="empty-note">no data this month yet</div>';return;}
   const barsHtml=`
     <div style="display:flex;align-items:flex-end;gap:3px;height:80px;margin-bottom:6px">
       ${sorted.map(d=>{
@@ -1047,7 +1026,7 @@ function renderMonthlyProgress(){
         const pct=Math.max(2,Math.round(cal/maxCal*100));
         const isOver=cal>g.calories;
         const lbl=formatDateLabel(String(d.date));
-        return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%">
+        return`<div style="flex:1;height:100%;display:flex;flex-direction:column;align-items:center;">
           <div style="flex:1;width:100%;display:flex;align-items:flex-end;">
             <div title="${lbl.main}: ${cal} kcal" style="width:100%;height:${pct}%;background:${isOver?'#b05232':'#3d6b43'};border-radius:3px;min-height:3px;transition:height 0.4s ease"></div>
           </div>
@@ -1055,17 +1034,12 @@ function renderMonthlyProgress(){
       }).join("")}
     </div>
     <div style="display:flex;gap:3px;margin-bottom:14px">
-      ${sorted.map(d=>{
-        const [,,dy]=String(d.date).split('-');
-        return`<div style="flex:1;text-align:center;font-size:9px;color:var(--hint)">${parseInt(dy)}</div>`;
-      }).join("")}
+      ${sorted.map(d=>{const[,,dy]=String(d.date).split('-');return`<div style="flex:1;text-align:center;font-size:9px;color:var(--hint)">${parseInt(dy)}</div>`;}).join("")}
     </div>
     <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:4px">
       <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#3d6b43;border-radius:2px;display:inline-block"></span>on goal</span>
       <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#b05232;border-radius:2px;display:inline-block"></span>over goal</span>
     </div>`;
-
-  // Day-by-day list below chart
   const listHtml=sorted.slice().reverse().map(d=>{
     const lbl=formatDateLabel(String(d.date));
     const cal=Math.round(+d.calories);
@@ -1078,7 +1052,6 @@ function renderMonthlyProgress(){
       <div style="text-align:right;min-width:80px"><div class="month-cal">${cal} kcal</div><div style="font-size:11px;${diffCol}">${diffStr}</div></div>
     </div>`;
   }).join("");
-
   document.getElementById("month-detail").innerHTML=barsHtml+listHtml;
 }
 
