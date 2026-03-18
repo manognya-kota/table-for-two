@@ -219,6 +219,30 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
 .bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 14px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--hint);cursor:pointer;transition:all 0.15s;letter-spacing:0.3px}
 .bnav-btn.active{color:var(--forest)}
 
+/* ── Recents ── */
+.recents-wrap{margin-bottom:10px;display:none}
+.recents-wrap.show{display:block}
+.recents-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px}
+.recents-chips{display:flex;flex-wrap:wrap;gap:6px}
+.recent-chip{display:flex;align-items:center;gap:5px;background:var(--tan);border:1px solid var(--border);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all 0.15s;max-width:100%}
+.recent-chip:hover{background:var(--tan2);border-color:var(--bark)}
+.recent-chip-name{font-size:12px;font-weight:500;color:var(--charcoal);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.recent-chip-cal{font-size:11px;color:var(--muted);white-space:nowrap}
+
+/* ── Log both button ── */
+.btn-log-both{width:100%;margin-top:7px;padding:8px;background:none;border:1.5px solid var(--forest);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--forest);cursor:pointer;transition:all 0.15s}
+.btn-log-both:hover{background:var(--forest-l,#d4e8d6)}
+
+/* ── Log both modal ── */
+.log-both-modal{background:var(--card);border-radius:22px 22px 0 0;padding:24px 24px 44px;width:100%;max-width:520px}
+.log-both-modal h3{font-family:'Lora',serif;font-size:18px;font-weight:400;margin-bottom:6px}
+.log-both-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.log-both-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:12px;background:var(--tan);border-radius:12px}
+.log-both-name{flex:1;font-size:14px;font-weight:500;color:var(--charcoal)}
+.log-both-qty{width:72px;padding:7px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;background:#fff;text-align:center}
+.log-both-qty:focus{border-color:var(--forest)}
+.log-both-unit{font-size:12px;color:var(--muted);min-width:40px}
+
 /* ── Spinner ── */
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -389,6 +413,28 @@ html,body{min-height:100vh;background:var(--cream);color:var(--charcoal);font-fa
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeGoals()">cancel</button>
       <button class="btn-save" onclick="saveGoals()">save goals</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log for both modal -->
+<div class="overlay" id="log-both-overlay" onclick="if(event.target===this)closeLogBoth()">
+  <div class="log-both-modal">
+    <h3>log for both</h3>
+    <div class="log-both-sub" id="lbm-food-name">Set qty for each person</div>
+    <div class="log-both-row">
+      <div class="log-both-name">Manu</div>
+      <input class="log-both-qty" id="lb-qty-manu" type="number" min="0" step="0.25" value="1"/>
+      <div class="log-both-unit" id="lb-unit-lbl">serving</div>
+    </div>
+    <div class="log-both-row">
+      <div class="log-both-name">Teju</div>
+      <input class="log-both-qty" id="lb-qty-teju" type="number" min="0" step="0.25" value="1"/>
+      <div class="log-both-unit" id="lb-unit-lbl2">serving</div>
+    </div>
+    <div class="modal-btns" style="margin-top:4px">
+      <button class="btn-cancel" onclick="closeLogBoth()">cancel</button>
+      <button class="btn-save" id="lb-save-btn" onclick="saveLogBoth()">log for both</button>
     </div>
   </div>
 </div>
@@ -611,6 +657,10 @@ function buildMealSections(){
             <span style="font-size:18px;line-height:1">+</span> add food
           </button>
           <div class="add-food-form" id="aff-${m.id}">
+            <div class="recents-wrap" id="rec-${m.id}">
+              <div class="recents-lbl">recently logged</div>
+              <div class="recents-chips" id="rec-chips-${m.id}"></div>
+            </div>
             <div class="food-entry">
               <div class="food-entry-top">
                 <input class="food-name-in" id="fin-${m.id}" type="text" placeholder="e.g. muesli, skyr, rice…" onkeydown="if(event.key==='Enter')searchFood('${m.id}')"/>
@@ -629,6 +679,7 @@ function buildMealSections(){
                 <button class="btn-add-more" onclick="addToPending('${m.id}')">+ add another item</button>
                 <button class="btn-log-it" id="bli-${m.id}" onclick="logCurrent('${m.id}')">log to ${m.label.toLowerCase()}</button>
               </div>
+              <button class="btn-log-both" onclick="openLogBoth('${m.id}')" id="blb-${m.id}">log for both manu &amp; teju</button>
             </div>
             <div class="pending-basket" id="pb-${m.id}">
               <div class="pending-lbl">queued items</div>
@@ -652,7 +703,55 @@ function showAddForm(mealId,e){
   e.stopPropagation();
   if(!document.getElementById("mb-"+mealId).classList.contains("open"))toggleMeal(mealId);
   document.getElementById("aff-"+mealId).classList.add("show");
+  renderRecents(mealId);
   setTimeout(()=>document.getElementById("fin-"+mealId).focus(),50);
+}
+
+// ── Recents ──────────────────────────────────────────────────
+function getRecents(){
+  try{return JSON.parse(localStorage.getItem("t4t-recents-shared")||"[]");}catch(e){return[];}
+}
+function saveRecent(item){
+  let recents=getRecents();
+  // Remove duplicate by name+unit
+  recents=recents.filter(r=>!(r.name===item.name&&r.unit===item.unit));
+  // Add to front
+  recents.unshift({name:item.name,cal:item.cal,p:item.p,c:item.c,f:item.f,qty:item.qty,unit:item.unit});
+  // Keep last 20
+  recents=recents.slice(0,20);
+  try{localStorage.setItem("t4t-recents-shared",JSON.stringify(recents));}catch(e){}
+}
+function renderRecents(mealId){
+  const recents=getRecents();
+  const wrap=document.getElementById("rec-"+mealId);
+  const chips=document.getElementById("rec-chips-"+mealId);
+  if(!recents.length){wrap.classList.remove("show");return;}
+  wrap.classList.add("show");
+  chips.innerHTML=recents.map((r,i)=>`
+    <div class="recent-chip" onclick="useRecent('${mealId}',${i})">
+      <div>
+        <div class="recent-chip-name">${r.qty} ${r.unit} ${r.name}</div>
+        <div class="recent-chip-cal">${Math.round(r.cal)} kcal · ${Math.round(r.p)}g P · ${Math.round(r.c)}g C · ${Math.round(r.f)}g F</div>
+      </div>
+    </div>`).join("");
+}
+function useRecent(mealId,idx){
+  const r=getRecents()[idx];
+  if(!r)return;
+  // Pre-fill form
+  document.getElementById("fin-"+mealId).value=r.name;
+  document.getElementById("qty-"+mealId).value=r.qty;
+  document.getElementById("unit-"+mealId).value=r.unit;
+  // Show AI preview immediately — no API call needed
+  aiResults[mealId]={name:r.name,cal:r.cal,p:r.p,c:r.c,f:r.f,qty:r.qty,unit:r.unit};
+  document.getElementById("apn-"+mealId).textContent=r.qty+" "+r.unit+" "+r.name;
+  document.getElementById("app-"+mealId).innerHTML=
+    `<div class="ai-pill">${Math.round(r.cal)} kcal</div>`+
+    `<div class="ai-pill">${Math.round(r.p)}g protein</div>`+
+    `<div class="ai-pill">${Math.round(r.c)}g carbs</div>`+
+    `<div class="ai-pill">${Math.round(r.f)}g fat</div>`;
+  document.getElementById("ap-"+mealId).classList.add("show");
+  document.getElementById("err-"+mealId).classList.remove("show");
 }
 
 // ── AI Search ─────────────────────────────────────────────────
@@ -733,6 +832,7 @@ function logCurrent(mealId){
     carbs:Math.round(ai.c),fat:Math.round(ai.f),qty,unit};
   logCache.push(entry);
   saveLogCache();
+  saveRecent({name:foodName,cal:entry.calories,p:entry.protein,c:entry.carbs,f:entry.fat,qty,unit});
   renderSummary();renderMealLogs();
   aiResults[mealId]=null;
   document.getElementById("ap-"+mealId).classList.remove("show");
@@ -762,6 +862,7 @@ function logAll(mealId){
       calories:Math.round(item.cal),protein:Math.round(item.p),
       carbs:Math.round(item.c),fat:Math.round(item.f),qty:item.qty,unit:item.unit};
     logCache.push(entry);
+    saveRecent({name:item.name,cal:entry.calories,p:entry.protein,c:entry.carbs,f:entry.fat,qty:item.qty,unit:item.unit});
     api({action:"addEntry",user:currentUser,date:currentDate,meal:mealId,
       foodName:item.name,calories:entry.calories,protein:entry.protein,
       carbs:entry.carbs,fat:entry.fat,qty:item.qty,unit:item.unit}).then(res=>{
@@ -1077,6 +1178,76 @@ function renderMonthlyProgress(){
     </div>`;
   }).join("");
   document.getElementById("month-detail").innerHTML=barsHtml+listHtml;
+}
+
+// ── Log for both ─────────────────────────────────────────────
+let logBothMealId=null;
+let logBothAiData=null;
+
+function openLogBoth(mealId){
+  const ai=aiResults[mealId];
+  if(!ai)return;
+  const qty=parseFloat(document.getElementById("qty-"+mealId).value)||1;
+  const unit=document.getElementById("unit-"+mealId).value;
+  const foodName=document.getElementById("fin-"+mealId).value.trim()||ai.name;
+  logBothMealId=mealId;
+  logBothAiData={...ai,name:foodName,qty,unit};
+  document.getElementById("lbm-food-name").textContent=qty+" "+unit+" "+foodName+" — set qty per person";
+  document.getElementById("lb-qty-manu").value=qty;
+  document.getElementById("lb-qty-teju").value=qty;
+  document.getElementById("lb-unit-lbl").textContent=unit;
+  document.getElementById("lb-unit-lbl2").textContent=unit;
+  document.getElementById("log-both-overlay").classList.add("show");
+}
+function closeLogBoth(){
+  document.getElementById("log-both-overlay").classList.remove("show");
+  logBothMealId=null;logBothAiData=null;
+}
+async function saveLogBoth(){
+  if(!logBothAiData||!logBothMealId)return;
+  const btn=document.getElementById("lb-save-btn");
+  btn.textContent="saving…";btn.disabled=true;
+  const mealId=logBothMealId;
+  const ai=logBothAiData;
+  const unit=ai.unit;
+  const baseCal=ai.cal/ai.qty; // per 1 unit
+  const baseP=ai.p/ai.qty;
+  const baseC=ai.c/ai.qty;
+  const baseF=ai.f/ai.qty;
+  const qtyManu=parseFloat(document.getElementById("lb-qty-manu").value)||0;
+  const qtyTeju=parseFloat(document.getElementById("lb-qty-teju").value)||0;
+
+  const entries=[
+    {user:"manu",qty:qtyManu,cal:Math.round(baseCal*qtyManu),p:Math.round(baseP*qtyManu),c:Math.round(baseC*qtyManu),f:Math.round(baseF*qtyManu)},
+    {user:"teju",qty:qtyTeju,cal:Math.round(baseCal*qtyTeju),p:Math.round(baseP*qtyTeju),c:Math.round(baseC*qtyTeju),f:Math.round(baseF*qtyTeju)}
+  ].filter(e=>e.qty>0);
+
+  // Optimistic update for current user
+  entries.forEach(e=>{
+    if(e.user===currentUser){
+      const entry={id:"tmp-"+Date.now()+Math.random(),meal:mealId,foodName:ai.name,
+        calories:e.cal,protein:e.p,carbs:e.c,fat:e.f,qty:e.qty,unit};
+      logCache.push(entry);
+    }
+  });
+  saveLogCache();
+  saveRecent({name:ai.name,cal:Math.round(baseCal),p:Math.round(baseP),c:Math.round(baseC),f:Math.round(baseF),qty:1,unit});
+  renderSummary();renderMealLogs();
+  closeLogBoth();
+
+  // Clear form
+  aiResults[mealId]=null;
+  document.getElementById("ap-"+mealId).classList.remove("show");
+  document.getElementById("fin-"+mealId).value="";
+  document.getElementById("qty-"+mealId).value=1;
+  document.getElementById("unit-"+mealId).value="serving";
+
+  // Save both to server in background
+  await Promise.all(entries.map(e=>api({
+    action:"addEntry",user:e.user,date:currentDate,meal:mealId,
+    foodName:ai.name,calories:e.cal,protein:e.p,carbs:e.c,fat:e.f,qty:e.qty,unit
+  })));
+  btn.textContent="log for both";btn.disabled=false;
 }
 
 // ── Goals ─────────────────────────────────────────────────────
